@@ -1,5 +1,7 @@
 module github.com/bpfman/bpfman-operator
 
+replace github.com/bpfman/bpfman => ../bpfman
+
 go 1.25.0
 
 require (

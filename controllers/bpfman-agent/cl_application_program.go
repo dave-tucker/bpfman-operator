@@ -392,6 +392,15 @@ func (r *ClBpfApplicationReconciler) getProgramReconciler(prog *bpfmaniov1alpha1
 			},
 		}
 
+	case bpfmaniov1alpha1.ProgTypeLsm:
+		rec = &ClLsmProgramReconciler{
+			ReconcilerCommon: r.ReconcilerCommon,
+			ClProgramReconcilerCommon: ClProgramReconcilerCommon{
+				currentProgram:      prog,
+				currentProgramState: progState,
+			},
+		}
+
 	default:
 		return nil, fmt.Errorf("unsupported bpf program type")
 	}
@@ -427,6 +436,10 @@ func (r *ClBpfApplicationReconciler) getProgState(prog *bpfmaniov1alpha1.ClBpfAp
 				}
 			case bpfmaniov1alpha1.ProgTypeFexit:
 				if progState.FExit.Function == prog.FExit.Function {
+					return progState, nil
+				}
+			case bpfmaniov1alpha1.ProgTypeLsm:
+				if progState.Lsm.Hook == prog.Lsm.Hook {
 					return progState, nil
 				}
 			default:
@@ -628,6 +641,12 @@ func (r *ClBpfApplicationReconciler) initializeNodeProgramList() error {
 				Links:           []bpfmaniov1alpha1.ClFexitAttachInfoState{},
 			}
 
+		case bpfmaniov1alpha1.ProgTypeLsm:
+			progState.Lsm = &bpfmaniov1alpha1.ClLsmProgramInfoState{
+				ClLsmLoadInfo: prog.Lsm.ClLsmLoadInfo,
+				Links:         []bpfmaniov1alpha1.ClLsmAttachInfoState{},
+			}
+
 		case bpfmaniov1alpha1.ProgTypeKprobe:
 			progState.KProbe = &bpfmaniov1alpha1.ClKprobeProgramInfoState{
 				Links: []bpfmaniov1alpha1.ClKprobeAttachInfoState{},
@@ -808,6 +827,8 @@ func (r *ClBpfApplicationReconciler) deleteLinks(program *bpfmaniov1alpha1.ClBpf
 		program.URetProbe.Links = []bpfmaniov1alpha1.ClUprobeAttachInfoState{}
 	case bpfmaniov1alpha1.ProgTypeXDP:
 		program.XDP.Links = []bpfmaniov1alpha1.ClXdpAttachInfoState{}
+	case bpfmaniov1alpha1.ProgTypeLsm:
+		program.Lsm.Links = []bpfmaniov1alpha1.ClLsmAttachInfoState{}
 	default:
 		r.Logger.Error(fmt.Errorf("unexpected EBPFProgType"), "unexpected EBPFProgType", "Type", program.Type)
 	}

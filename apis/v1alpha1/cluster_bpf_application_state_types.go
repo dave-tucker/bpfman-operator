@@ -33,6 +33,7 @@ import (
 // +kubebuilder:validation:XValidation:rule="has(self.type) && self.type == 'UProbe' ?  has(self.uprobe) : !has(self.uprobe)",message="uprobe configuration is required when type is uprobe, and forbidden otherwise"
 // +kubebuilder:validation:XValidation:rule="has(self.type) && self.type == 'URetProbe' ?  has(self.uretprobe) : !has(self.uretprobe)",message="uretprobe configuration is required when type is uretprobe, and forbidden otherwise"
 // +kubebuilder:validation:XValidation:rule="has(self.type) && self.type == 'TracePoint' ?  has(self.tracepoint) : !has(self.tracepoint)",message="tracepoint configuration is required when type is tracepoint, and forbidden otherwise"
+// +kubebuilder:validation:XValidation:rule="has(self.type) && self.type == 'LSM' ?  has(self.lsm) : !has(self.lsm)",message="lsm configuration is required when type is LSM, and forbidden otherwise"
 type ClBpfApplicationProgramState struct {
 	BpfProgramStateCommon `json:",inline"`
 
@@ -72,7 +73,7 @@ type ClBpfApplicationProgramState struct {
 	// associated with a URetProbe program.
 	// +unionDiscriminator
 	// +required
-	// +kubebuilder:validation:Enum:="FEntry";"FExit";"KProbe";"KRetProbe";"TC";"TCX";"TracePoint";"UProbe";"URetProbe";"XDP"
+	// +kubebuilder:validation:Enum:="FEntry";"FExit";"KProbe";"KRetProbe";"LSM";"TC";"TCX";"TracePoint";"UProbe";"URetProbe";"XDP"
 	Type EBPFProgType `json:"type"`
 
 	// xdp contains the attachment data for an XDP program when type is set to XDP.
@@ -131,6 +132,11 @@ type ClBpfApplicationProgramState struct {
 	// +unionMember
 	// +optional
 	TracePoint *ClTracepointProgramInfoState `json:"tracepoint,omitempty"`
+
+	// lsm contains the attachment data for an LSM program when type is set to LSM.
+	// +unionMember
+	// +optional
+	Lsm *ClLsmProgramInfoState `json:"lsm,omitempty"`
 }
 
 type ClBpfApplicationStateStatus struct {

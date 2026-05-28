@@ -151,6 +151,8 @@ func FromString(p string) (*ProgramType, error) {
 		programType = Tracing
 	case "fexit":
 		programType = Tracing
+	case "lsm":
+		programType = Lsm
 	default:
 		return nil, fmt.Errorf("unknown program type: %s", p)
 	}
@@ -235,6 +237,7 @@ func (p ProgramType) String() string {
 const UprobeString = "uprobe"
 const FentryString = "fentry"
 const FexitString = "fexit"
+const LsmString = "lsm"
 const ApplicationString = "application"
 const TcxString = "tcx"
 

@@ -444,6 +444,54 @@ spec:
                             type: object
                           type: array
                       type: object
+                    lsm:
+                      description: |-
+                        lsm is an optional field, but required when the type field is set to
+                        LSM. lsm defines the desired state of the application's LSM programs.
+                        LSM programs attach to Linux Security Module hooks to implement or
+                        observe security policy. The hook name (e.g., "file_open") is specified
+                        at load time. LSM hooks are global kernel entry points and cannot be
+                        constrained to a namespace.
+                      properties:
+                        hook:
+                          description: |-
+                            hook is a required field and specifies the name of the Linux Security
+                            Module hook that the LSM program attaches to (e.g., "file_open",
+                            "socket_connect"). hook must not be an empty string, must not exceed 64
+                            characters in length, must start with alpha characters and must only
+                            contain alphanumeric characters.
+                          maxLength: 64
+                          minLength: 1
+                          pattern: ^[a-zA-Z][a-zA-Z0-9_]+.
+                          type: string
+                        links:
+                          description: |-
+                            links is an optional field and is a flag to indicate if the LSM program
+                            should be attached. The attachment point for an LSM program is a Linux
+                            kernel security hook. Unlike other eBPF program types, an LSM program must
+                            be provided with the target hook at load time via the hook field. The links
+                            field is optional, but unlike other program types where it represents a list
+                            of attachment points, for LSM programs it contains at most one entry that
+                            determines whether the program should be attached to the specified hook. To
+                            attach the program, add an entry to links with mode set to Attach. To
+                            detach it, remove the entry from links.
+                          items:
+                            properties:
+                              mode:
+                                description: |-
+                                  mode is a required field. When set to Attach, the LSM program will
+                                  attempt to be attached. To detach the LSM program, remove the link entry.
+                                enum:
+                                - Attach
+                                type: string
+                            required:
+                            - mode
+                            type: object
+                          maxItems: 1
+                          type: array
+                      required:
+                      - hook
+                      type: object
                     name:
                       description: |-
                         name is a required field and is the name of the function that is the entry
@@ -983,6 +1031,7 @@ spec:
                       - UProbe
                       - URetProbe
                       - TracePoint
+                      - LSM
                       type: string
                     uprobe:
                       description: |-
@@ -1499,6 +1548,10 @@ spec:
                       and forbidden otherwise
                     rule: 'has(self.type) && self.type == ''TracePoint'' ?  has(self.tracepoint)
                       : !has(self.tracepoint)'
+                  - message: lsm configuration is required when type is LSM, and forbidden
+                      otherwise
+                    rule: 'has(self.type) && self.type == ''LSM'' ?  has(self.lsm)
+                      : !has(self.lsm)'
                 minItems: 1
                 type: array
             required:

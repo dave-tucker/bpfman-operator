@@ -10,7 +10,7 @@ github.com/beorn7/perks/quantile
 # github.com/blang/semver/v4 v4.0.0
 ## explicit; go 1.14
 github.com/blang/semver/v4
-# github.com/bpfman/bpfman v0.6.0
+# github.com/bpfman/bpfman v0.6.0 => ../bpfman
 ## explicit; go 1.22.0
 github.com/bpfman/bpfman/clients/gobpfman/v1
 # github.com/cenkalti/backoff/v4 v4.3.0
@@ -1531,3 +1531,4 @@ sigs.k8s.io/structured-merge-diff/v6/value
 # sigs.k8s.io/yaml v1.6.0
 ## explicit; go 1.22
 sigs.k8s.io/yaml
+# github.com/bpfman/bpfman => ../bpfman

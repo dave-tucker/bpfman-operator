@@ -53,6 +53,9 @@ const (
 
 	// ProgTypeTracepoint refers to the Tracepoint program type.
 	ProgTypeTracepoint EBPFProgType = "TracePoint"
+
+	// ProgTypeLsm refers to the LSM program type.
+	ProgTypeLsm EBPFProgType = "LSM"
 )
 
 type TCDirectionType string
@@ -73,6 +76,7 @@ const (
 // +kubebuilder:validation:XValidation:rule="has(self.type) && self.type == 'UProbe' ?  has(self.uprobe) : !has(self.uprobe)",message="uprobe configuration is required when type is uprobe, and forbidden otherwise"
 // +kubebuilder:validation:XValidation:rule="has(self.type) && self.type == 'URetProbe' ?  has(self.uretprobe) : !has(self.uretprobe)",message="uretprobe configuration is required when type is uretprobe, and forbidden otherwise"
 // +kubebuilder:validation:XValidation:rule="has(self.type) && self.type == 'TracePoint' ?  has(self.tracepoint) : !has(self.tracepoint)",message="tracepoint configuration is required when type is tracepoint, and forbidden otherwise"
+// +kubebuilder:validation:XValidation:rule="has(self.type) && self.type == 'LSM' ?  has(self.lsm) : !has(self.lsm)",message="lsm configuration is required when type is LSM, and forbidden otherwise"
 type ClBpfApplicationProgram struct {
 	// name is a required field and is the name of the function that is the entry
 	// point for the eBPF program. name must not be an empty string, must not
@@ -142,7 +146,7 @@ type ClBpfApplicationProgram struct {
 	// details on XDP programs.
 	// +unionDiscriminator
 	// +required
-	// +kubebuilder:validation:Enum:="XDP";"TC";"TCX";"FEntry";"FExit";"KProbe";"KRetProbe";"UProbe";"URetProbe";"TracePoint"
+	// +kubebuilder:validation:Enum:="XDP";"TC";"TCX";"FEntry";"FExit";"KProbe";"KRetProbe";"UProbe";"URetProbe";"TracePoint";"LSM"
 	Type EBPFProgType `json:"type"`
 
 	// xdp is an optional field, but required when the type field is set to XDP.
@@ -269,6 +273,16 @@ type ClBpfApplicationProgram struct {
 	// +unionMember
 	// +optional
 	TracePoint *ClTracepointProgramInfo `json:"tracepoint,omitempty"`
+
+	// lsm is an optional field, but required when the type field is set to
+	// LSM. lsm defines the desired state of the application's LSM programs.
+	// LSM programs attach to Linux Security Module hooks to implement or
+	// observe security policy. The hook name (e.g., "file_open") is specified
+	// at load time. LSM hooks are global kernel entry points and cannot be
+	// constrained to a namespace.
+	// +unionMember
+	// +optional
+	Lsm *ClLsmProgramInfo `json:"lsm,omitempty"`
 }
 
 // spec defines the desired state of the ClusterBpfApplication. The

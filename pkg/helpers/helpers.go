@@ -37,6 +37,7 @@ const (
 	Tracepoint ProgramType = 5
 	Xdp        ProgramType = 6
 	Tracing    ProgramType = 26
+	Lsm        ProgramType = 29
 )
 
 func (p ProgramType) Uint32() *uint32 {
@@ -57,6 +58,8 @@ func FromString(p string) (*ProgramType, error) {
 		programType = Tracepoint
 	case "tracing":
 		programType = Tracing
+	case "lsm":
+		programType = Lsm
 	default:
 		return nil, fmt.Errorf("unknown program type: %s", p)
 	}
@@ -76,6 +79,8 @@ func (p ProgramType) String() string {
 		return "tracepoint"
 	case Tracing:
 		return "tracing"
+	case Lsm:
+		return "lsm"
 	default:
 		return ""
 	}
